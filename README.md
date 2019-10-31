@@ -1,13 +1,13 @@
 # Networked
 
+![](.gitbook/assets/1571991474338.png)
+
 ## 列举
 
 我们首先枚举开放端口，然后深入到每个服务以获取更多信息
 
 ### Nmap 端口扫描
 
-{% code-tabs %}
-{% code-tabs-item title="\`nmap\`" %}
 ```text
 root@kali:~# nmap -A 10.10.10.146
 Starting Nmap 7.80 ( https://nmap.org ) at 2019-10-24 15:24 CST
@@ -37,15 +37,11 @@ OS and Service detection performed. Please report any incorrect results at https
 Nmap done: 1 IP address (1 host up) scanned in 72.50 seconds
 
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
 
 能够发现开放web服务、ssh服务
 
 访问首页[http://10.10.10.146](http://10.10.10.146)
 
-{% code-tabs %}
-{% code-tabs-item title="index.html" %}
 ```markup
 root@kali:~# curl http://10.10.10.146
 <html>
@@ -57,13 +53,9 @@ Join us at the pool party this Sat to get a glimpse
 </body>
 </html>
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
 
 ### Dirb 目录爆破
 
-{% code-tabs %}
-{% code-tabs-item title="dirb" %}
 ```text
 root@kali:~# dirb http://10.10.10.146
 
@@ -86,8 +78,6 @@ GENERATED WORDS: 4612
 + http://10.10.10.146/cgi-bin/ (CODE:403|SIZE:210)                             
 + http://10.10.10.146/index.php (CODE:200|SIZE:229)   
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
 
 爆破网站后台，发现链接[http://10.10.10.146/backup/](http://10.10.10.146/backup/)
 
@@ -103,8 +93,6 @@ GENERATED WORDS: 4612
 
 分析upload.php 文件上传限制
 
-{% code-tabs %}
-{% code-tabs-item title="upload.php" %}
 ```text
 if (!(check_file_type($_FILES["myFile"]) && filesize($_FILES['myFile']['tmp_name']) < 60000)) {
       echo '<pre>Invalid image file.</pre>';
@@ -112,13 +100,9 @@ if (!(check_file_type($_FILES["myFile"]) && filesize($_FILES['myFile']['tmp_name
       displayform();
     }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
 
 该处对文件大小进行限制小于60000 报错，**CONTENT-LENGTH**验证
 
-{% code-tabs %}
-{% code-tabs-item title="upload.php" %}
 ```text
     //$name = $_SERVER['REMOTE_ADDR'].'-'. $myFile["name"
 ];
@@ -132,8 +116,6 @@ if (!(check_file_type($_FILES["myFile"]) && filesize($_FILES['myFile']['tmp_name
     }
 ​
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
 
 该处`$validext = array('.jpg', '.png', '.gif', '.jpeg');`,对上传的文件类型进行白名单限制
 
